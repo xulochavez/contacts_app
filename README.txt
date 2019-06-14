@@ -2,11 +2,11 @@
 
 # clone to a local folder
 
-git clone git@github.com:xulochavez/contacts.git
+git clone git@github.com:xulochavez/contacts_app.git
 
-# This will create contacts folder
+# This will create contacts_app folder
 
-# cd into contacts folder
+# cd into contacts_app folder
 
 # create virtualenv
 
@@ -15,6 +15,9 @@ pip install -r requirements.txt
 
 # install currency_converter package
 pip install .
+
+# run the tests
+pytest tests
 
 # initialise database
 init_db.sh
