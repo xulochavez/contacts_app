@@ -8,5 +8,5 @@ class Config():
 class TestConfig(Config):
     DEBUG = True
     TESTING = True
-    SQLALCHEMY_DATABASE_URI = 'sqlite:////tmp/contacts_part_1_test.db'
+    SQLALCHEMY_DATABASE_URI = 'sqlite:////tmp/contacts_test.db'
 

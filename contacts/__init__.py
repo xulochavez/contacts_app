@@ -1,4 +1,7 @@
 from flask import Flask, make_response, jsonify
+from flask_migrate import Migrate
+
+
 from contacts.config import Config
 from contacts import db, routes
 
@@ -11,7 +14,10 @@ def create_app(test_config=None):
     else:
         app.config.from_object(Config)
 
+    app.logger.info(f"connecting to db {app.config['SQLALCHEMY_DATABASE_URI']}")
+
     db.init_app(app)
+    migrate = Migrate(app, db.db)
 
     app.register_blueprint(routes.bp)
 
