@@ -1,8 +1,9 @@
 import string
 import random
+import datetime
 
 from contacts import celery, create_app
-from contacts.db import Contact, Email, db
+from contacts.db import Contact, Email, db, save_contact, purge_old_contacts
 
 
 def generate_randon_contact_details():
@@ -17,8 +18,6 @@ def generate_randon_contact_details():
 @celery.task
 def add_random_contacts():
     username, name, surname, emails = generate_randon_contact_details()
-    new_contact = Contact(username=username, name=name, surname=surname,
-                          emails=[Email(email=e) for e in emails])
-    db.session.add(new_contact)
-    db.session.commit()
-    print(f"added {new_contact}")
+    save_contact(username=username, name=name, surname=surname, emails=emails)
+    older_than_timestamp = datetime.datetime.now() - datetime.timedelta(seconds=60)
+    purge_old_contacts(older_than_timestamp)

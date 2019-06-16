@@ -2,6 +2,7 @@
 
 # for PART 1 checkout tag part1
 # for PART 2 checkout tag part2
+# for PART 3 checkout tag part3
 
 # clone to a local folder
 
@@ -50,3 +51,11 @@ curl -i -H "Content-Type: application/json" -X POST "http://localhost:5000/conta
 curl -i -H "Content-Type: application/json" -X PUT "http://localhost:5000/contacts_app/contacts/mastershifu" -d '{"surname":"shifuuu", "email":["mshifu_2@kp.com"]}'
 # delete contact
 curl -i "http://localhost:5000/contacts_app/contact/mastershifu" -X DELETE
+
+# part 3: periodic task with celery
+
+# run the celery beat scheduler - from the project folder, contacts_app
+celery -A celery_worker:celery beat --loglevel=info
+
+# run the celery worker - in another terminal, from the project folder, contacts_app
+celery -A celery_worker:celery worker--loglevel=info
