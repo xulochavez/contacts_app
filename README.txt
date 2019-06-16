@@ -11,7 +11,7 @@ git clone git@github.com:xulochavez/contacts_app.git
 
 # cd into contacts_app folder
 
-# create virtualenv
+# create and activate virtualenv
 
 # install requirements
 pip install -r requirements.txt
@@ -22,8 +22,13 @@ pip install .
 # run the tests
 pytest tests
 
-# initialise database
+# delete existing sqlite db prod file  (from config: /tmp/contacts.db) (Tables have the old schema)
+# and initialise database
 init_db.sh
+
+# (alternatively run migration using flask-migrate
+# however this needs manual changes to the automatically generated file, see migrations/versions/bf766f555772_.py
+# required commands are kept in scripts/migrate.sh)
 
 # run flask server
 run.sh
