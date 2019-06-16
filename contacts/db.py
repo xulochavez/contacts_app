@@ -1,4 +1,5 @@
 import click
+from datetime import datetime
 
 from flask.cli import with_appcontext
 
@@ -27,20 +28,24 @@ class Contact(db.Model):
     username = db.Column(db.String(50), unique=True)
     name = db.Column(db.String(50))
     surname = db.Column(db.String(50))
+    created_at = db.Column(db.DateTime)
     emails = db.relationship('Email', backref=db.backref('contact', lazy=True), cascade="all, delete, delete-orphan")
 
     def __repr__(self):
-        return f'<Contact username: {self.username}, name:{self.name},  surname: {self.surname}, emails: {self.emails}>'
+        return f'<Contact username: {self.username}, name:{self.name},  surname: {self.surname}, created_at: {self.created_at}, emails: {self.emails}>'
 
     def as_dict(self):
         "returns a dictionary of columns and values for the instance"
         as_dict = {c.name: getattr(self, c.name) for c in self.__table__.columns if c.name not in ['id']}
         as_dict['emails'] = [e.email for e in self.emails]
+        # ignore created_at col, this is used internally only
+        del as_dict['created_at']
         return as_dict
 
     @classmethod
     def get_cols(cls):
-        return [c.name for c in cls.__table__.columns if c.name not in ['id']] + ['emails']
+        # ignore created_at col, this is used internally only
+        return [c.name for c in cls.__table__.columns if c.name not in ['id', 'created_at']] + ['emails']
 
 
 class Email(db.Model):
@@ -54,7 +59,7 @@ class Email(db.Model):
 
 
 def save_contact(username, name, surname, emails):
-    new_contact = Contact(username=username, name=name, surname=surname)
+    new_contact = Contact(username=username, name=name, surname=surname, created_at=datetime.now())
     new_contact.emails.extend([Email(email=email) for email in emails])
     db.session.add(new_contact)
     db.session.commit()
@@ -119,6 +124,14 @@ def delete_db_contact(username):
     contact = contacts[0]
 
     db.session.delete(contact)
+    db.session.commit()
+
+
+def purge_old_contacts(older_than_timestamp):
+    contacts = Contact.query.filter(Contact.created_at < older_than_timestamp).all()
+
+    for contact in contacts:
+        db.session.delete(contact)
     db.session.commit()
 
 

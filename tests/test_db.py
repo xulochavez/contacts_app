@@ -1,9 +1,10 @@
-import datetime
+from datetime import datetime, timedelta
 import pytest
+from unittest import mock
 
 from contacts import create_app
 from contacts.config import TestConfig
-from contacts.db import db, Contact, save_contact, load_contacts
+from contacts.db import db, Contact, save_contact, load_contacts, purge_old_contacts
 
 
 @pytest.fixture
@@ -35,6 +36,22 @@ def test_load_contacts(test_app):
         assert len(contacts) == 2
         assert dict(username='vpr', name='v', surname='viper', emails=['vpr@kp.com']) in contacts
 
+
+def test_purge_old_contacts(test_app):
+    with test_app.app_context():
+        save_contact(username='vpr', name='v', surname='viper', emails=['vpr@kp.com'])
+
+        # save contact as if it was saved 2 mins ago
+        with mock.patch('contacts.db.datetime') as mock_datetime:
+            mock_datetime.now.return_value = datetime.now() - timedelta(seconds=120)
+            save_contact(username='mts', name='m', surname='mantis', emails=['mts@kp.com'])
+
+        older_than_timestamp = datetime.now() - timedelta(seconds=60)
+        purge_old_contacts(older_than_timestamp)
+
+        contacts = load_contacts()
+        assert len(contacts) == 1
+        assert dict(username='vpr', name='v', surname='viper', emails=['vpr@kp.com']) in contacts
 
 
 
