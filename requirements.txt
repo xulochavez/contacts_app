@@ -1,3 +1,6 @@
 pytest
 Flask
 Flask-SQLalchemy
+flask-migrate
+celery
+redis

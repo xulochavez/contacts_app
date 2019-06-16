@@ -30,7 +30,7 @@ class Contact(db.Model):
     emails = db.relationship('Email', backref=db.backref('contact', lazy=True), cascade="all, delete, delete-orphan")
 
     def __repr__(self):
-        return f'<Contact username: {self.username}, name:{self.name},  surname: {self.surname}, email: {self.email}>'
+        return f'<Contact username: {self.username}, name:{self.name},  surname: {self.surname}, emails: {self.emails}>'
 
     def as_dict(self):
         "returns a dictionary of columns and values for the instance"

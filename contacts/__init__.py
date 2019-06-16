@@ -1,9 +1,12 @@
 from flask import Flask, make_response, jsonify
 from flask_migrate import Migrate
 
+from celery import Celery
 
 from contacts.config import Config
 from contacts import db, routes
+
+celery = Celery(__name__, broker=Config.CELERY_BROKER_URL)
 
 
 def create_app(test_config=None):
@@ -28,5 +31,7 @@ def create_app(test_config=None):
     @app.errorhandler(404)
     def not_found(error):
         return make_response(jsonify({'error': 'Not found'}), 404)
+
+    celery.conf.update(app.config)
 
     return app
