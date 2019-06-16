@@ -12,12 +12,20 @@ def index():
 
 @bp.route('/contacts', methods=['GET'])
 def get_contacts():
-    return jsonify(load_contacts())
+    email = request.args.get('email', '')
+    if email:
+        contacts = load_contacts(email=email)
+    else:
+        contacts = load_contacts()
+    return jsonify(contacts)
 
 
 @bp.route('/contacts/<string:username>', methods=['GET'])
 def get_contact(username):
-    return jsonify(load_contacts(username=username))
+    contacts = load_contacts(username=username)
+    if not contacts:
+        abort(404)
+    return jsonify(contacts[0])
 
 
 @bp.route('/contacts', methods=['POST'])

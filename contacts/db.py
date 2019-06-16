@@ -24,10 +24,10 @@ def init_app(app):
 class Contact(db.Model):
     __tablename__ = "contacts"
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(50), unique=1)
+    username = db.Column(db.String(50), unique=True)
     name = db.Column(db.String(50))
     surname = db.Column(db.String(50))
-    emails = db.relationship('Email', backref=db.backref('contact', lazy=True))
+    emails = db.relationship('Email', backref=db.backref('contact', lazy=True), cascade="all, delete, delete-orphan")
 
     def __repr__(self):
         return f'<Contact username: {self.username}, name:{self.name},  surname: {self.surname}, email: {self.email}>'
@@ -46,8 +46,8 @@ class Contact(db.Model):
 class Email(db.Model):
     __tablename__ = "emails"
     id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(50))
-    contact_id = db.Column(db.Integer, db.ForeignKey('contacts.id'))
+    email = db.Column(db.String(50), unique=True)
+    contact_id = db.Column(db.Integer, db.ForeignKey('contacts.id', ondelete='CASCADE'))
 
     def __repr__(self):
         return f'<Email email: {self.email}>'
@@ -60,9 +60,12 @@ def save_contact(username, name, surname, emails):
     db.session.commit()
 
 
-def load_contacts(username=None):
+def load_contacts(username=None, email=None):
     if username:
         contacts = Contact.query.filter(Contact.username == username).all()
+    elif email:
+        email_objs = Email.query.filter(Email.email == email).all()
+        contacts = [e.contact for e in email_objs]
     else:
         contacts = Contact.query.all()
 
