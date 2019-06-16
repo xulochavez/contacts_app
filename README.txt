@@ -22,6 +22,8 @@ pip install .
 # run the tests
 pytest tests
 
+### For part2 and part3 only
+#
 # delete existing sqlite db prod file  (from config: /tmp/contacts.db) (Tables have the old schema)
 # and initialise database
 init_db.sh
@@ -29,6 +31,8 @@ init_db.sh
 # (alternatively run migration using flask-migrate
 # however this needs manual changes to the automatically generated file, see migrations/versions/bf766f555772_.py
 # required commands are kept in scripts/migrate.sh)
+#
+### end of for part2 and part3 only
 
 # run flask server
 run.sh
